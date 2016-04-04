@@ -1,12 +1,18 @@
 from pyalgotrade import strategy
 from pyalgotrade import dataseries
+from pyalgotrade.barfeed import yahoofeed
 from pyalgotrade.dataseries import aligned
 from pyalgotrade import plotter
 from pyalgotrade.tools import yahoofinance
 from pyalgotrade.stratanalyzer import sharpe
-
+import pyalgotrade.barfeed.dbfeed
 import numpy as np
 import statsmodels.api as sm
+import pandas as pd
+from pandas import DataFrame
+from vladik import DBUtil
+from pyalgotrade.feed import csvfeed
+
 
 
 def get_beta(values1, values2):
@@ -134,22 +140,43 @@ class StatArb(strategy.BacktestingStrategy):
 
 
 def main(plot):
-    instruments = ["PEP", "KO"]
+    instruments = ["KO", "KO"]
     windowSize = 50
 
     # Download the bars.
-    feed = yahoofinance.build_feed(instruments, 2014, 2016, ".")
+    feed = yahoofeed.Feed()
+    feed.addBarsFromCSV("KO","KO-2014-yahoofinance.csv")
 
-    strat = StatArb(feed, instruments[0], instruments[1], windowSize)
+
+    # dbUtil = DBUtil.DBUtil()
+    # bidO = dbUtil.bidO
+    # askB = dbUtil.askB
+    # time = dbUtil.p_time
+    # t = np.array(time)
+    # a = np.array(bidO)
+    # b = np.array(askB)
+    # d1 = {'bid_okcoin': a, 'time': pd.to_datetime(t, unit='s')}
+    # df1 = DataFrame(data=d1, columns=d1.keys())
+    # d2 = {'ask_bitmex': b, 'time': pd.to_datetime(t, unit='s')}
+    # df2 = DataFrame(data=d2, columns=d2.keys())
+
+    # feed = csvfeed.Feed("Date", "%Y-%m-%d")
+    # feed.addValues(df1)
+    # feed.addValuesFromCSV("LBMA-GOLD.csv")
+    for dateTime, value in feed:
+        print dateTime, value
+
+
+    strategy = StatArb(feed, instruments[0], instruments[1], windowSize)
     sharpeRatioAnalyzer = sharpe.SharpeRatio()
-    strat.attachAnalyzer(sharpeRatioAnalyzer)
+    strategy.attachAnalyzer(sharpeRatioAnalyzer)
 
     if plot:
-        plt = plotter.StrategyPlotter(strat, False, False, True)
-        plt.getOrCreateSubplot("hedge").addDataSeries("Hedge Ratio", strat.getHedgeRatioDS())
-        plt.getOrCreateSubplot("spread").addDataSeries("Spread", strat.getSpreadDS())
+        plt = plotter.StrategyPlotter(strategy, False, False, True)
+        plt.getOrCreateSubplot("hedge").addDataSeries("Hedge Ratio", strategy.getHedgeRatioDS())
+        plt.getOrCreateSubplot("spread").addDataSeries("Spread", strategy.getSpreadDS())
 
-    strat.run()
+    strategy.run()
     print "Sharpe ratio: %.2f" % sharpeRatioAnalyzer.getSharpeRatio(0.05)
 
     if plot:

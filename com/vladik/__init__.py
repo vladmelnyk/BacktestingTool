@@ -3,10 +3,11 @@ import pandas as pd
 from pandas import DataFrame
 import CointegratedAssets
 from statsmodels.tsa.api import coint
-# from vladik.DBUtil import DBUtil
 import DBUtil
 import johansen
-import zipline
+# import zipline
+
+
 dbUtil = DBUtil.DBUtil();
 print(dbUtil.getData())
 bidO = dbUtil.bidO
