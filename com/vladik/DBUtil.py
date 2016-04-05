@@ -26,8 +26,8 @@ class DBUtil:
         try:
             # execute SQL query using execute() method.
             cursor.execute("SELECT * from Statistics_Prices ORDER by p_time desc")
-            results = cursor.fetchmany(size=60)
-            for row in results:
+            results = cursor.fetchmany(size=420)
+            for row in reversed(results):
                 self.p_time.append(datetime.datetime.strftime(row[0],'%Y-%m-%d %H:%M:%S'))
                 self.bidO.append(round(row[1],ndigits=4))
                 self.askO.append(row[2])
