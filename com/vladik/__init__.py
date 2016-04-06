@@ -9,13 +9,14 @@ import math
 
 def calculateStat(x,y):
     cointegration = coint(x,y)
-    signal = cointegration[1] < 0.05
+    signal = (cointegration[1] < 0.05).__int__()
     x= add_constant(x)
     reg = OLS(y, x).fit()
     # returns bo,b1,rmse
-    return [signal, reg.params[0],reg.params[1], math.sqrt(reg.mse_resid)]
+    return (signal, float(reg.params[0]),float(reg.params[1]), float(math.sqrt(reg.mse_resid)))
 
 dbUtil = DBUtil.DBUtil();
+dbUtil.getData()
 bidO = dbUtil.bidO
 askB = dbUtil.askB
 bidB = dbUtil.bidB
@@ -30,8 +31,11 @@ askO = np.array(askO)
 
 statBidOaskB =  calculateStat(bidO,askB)
 statBidBaskO =  calculateStat(bidB,askO)
+array = statBidOaskB + statBidBaskO
 print statBidOaskB
 print statBidBaskO
+print array
+dbUtil.insertData(array)
 
 
 
