@@ -7,11 +7,11 @@ import DBUtil
 import johansen
 import math
 
-def calculateStat(x,y):
-    cointegration = coint(x,y)
+def calculateStat(y,x):
+    cointegration = coint(y,x)
     signal = (cointegration[1] < 0.05).__int__()
     x= add_constant(x)
-    reg = OLS(x,y).fit()
+    reg = OLS(y, x).fit()
     # returns bo,b1,rmse
     return (signal, float(reg.params[0]),float(reg.params[1]), float(math.sqrt(reg.mse_resid)))
 
