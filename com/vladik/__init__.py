@@ -11,7 +11,7 @@ def calculateStat(x,y):
     cointegration = coint(x,y)
     signal = (cointegration[1] < 0.05).__int__()
     x= add_constant(x)
-    reg = OLS(y, x).fit()
+    reg = OLS(x,y).fit()
     # returns bo,b1,rmse
     return (signal, float(reg.params[0]),float(reg.params[1]), float(math.sqrt(reg.mse_resid)))
 
