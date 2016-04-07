@@ -6,6 +6,7 @@ import CointegratedAssets
 import DBUtil
 import johansen
 import math
+import datetime
 
 def calculateStat(y,x):
     cointegration = coint(y,x)
@@ -28,9 +29,15 @@ askB = np.array(askB)
 bidB = np.array(bidB)
 askO = np.array(askO)
 
-
 statBidOaskB =  calculateStat(bidO,askB)
 statBidBaskO =  calculateStat(bidB,askO)
+# date now insert into statBidOaskB
+date = datetime.datetime.now()
+date = date.strftime('%Y-%m-%d %H:%M:%S')
+statBidOaskB = list(statBidOaskB)
+statBidOaskB.insert(0, date)
+statBidOaskB = tuple(statBidOaskB)
+#
 array = statBidOaskB + statBidBaskO
 print statBidOaskB
 print statBidBaskO
